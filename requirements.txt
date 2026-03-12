@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+requests
+beautifulsoup4
+spacy
+sentence-transformers
+faiss-cpu
+pydantic-settings
+## Python 3.11.9 was used; spaCy is not updated with py 3.14 yet. 
