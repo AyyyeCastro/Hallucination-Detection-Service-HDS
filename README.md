@@ -1,5 +1,5 @@
 # Hallucination-Detection-Service (HDS)
-Analyzes LLM-generated output from Wikipedia by extracting factual claims, retrieving supporting evidence via the MediaWiki API and scoring semantic alignment between claims and evidence chunks using vector similarity.
+Analyzes LLM-generated text by extracting factual claims, retrieving supporting evidence from Wikipedia via the MediaWiki API, and scoring semantic alignment between claims and evidence chunks using vector similarity.
 
 # V1: Alpha Phase
 The core architecture of the system is complete, and working. However, LLM  fact-verification/accuracy needs significant refinement; likely due to chunk processing and comparison. V1 is simply intended to be a working and stable full-stack project. Further refinement coming in the future. Detailed log below.
