@@ -5,7 +5,7 @@ from app.routes.analyze import router as analyze_router
 app = FastAPI(
     title="HDS",
     description="API for analyzing LLM outputs for accuracy and hallucination",
-    version="0.0.1"
+    version="2.0"
 )
 
 origins=[
@@ -22,7 +22,7 @@ app.add_middleware(
 
 app.include_router(analyze_router, prefix="/analyze", tags=["analysis"])
 
-app.get("/")
+@app.get("/")
 def health_check():
     return{
         "Status...": "HDS API running."
