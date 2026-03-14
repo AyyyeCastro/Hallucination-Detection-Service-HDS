@@ -10,6 +10,11 @@ class ClaimResult(BaseModel):
     claim: str
     context_based_claim: str
     search_query: Optional[str] = None
+    subject_search_query: Optional[str] = None
+    retrieval_status: str
+    grounding_status: str
+    retrieval_strategy: str
+    contradiction_reason: Optional[str] = None
     score: float
     semantic_score: float
     verification: str
@@ -17,6 +22,7 @@ class ClaimResult(BaseModel):
     page_title: Optional[str] = None
     matched_numbers: List[str] = Field(default_factory=list)
     mismatched_numbers: List[str] = Field(default_factory=list)
+
 
 class SummaryResult(BaseModel):
     claims_analyzed: int

@@ -8,7 +8,7 @@ HEADERS = {
 }
 
 
-def search_wikipedia(query: str, limit: int = 5) -> List[Dict]:
+def search_wikipedia(query: str, limit: int = 12) -> List[Dict]:
     params = {
         "action": "query",
         "list": "search",

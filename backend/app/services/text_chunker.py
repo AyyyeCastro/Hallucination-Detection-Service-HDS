@@ -10,15 +10,15 @@ def text_chunker(text: str, window_size: int = 2, min_words: int = 6) -> list[st
 
     sentences = []
     for sent in doc.sents:
-        segmented = sent.text.strip()
+        strip_text = sent.text.strip()
 
-        if not segmented:
+        if not strip_text:
             continue
 
-        if len(segmented.split()) < min_words:
+        if len(strip_text.split()) < min_words:
             continue
 
-        sentences.append(segmented)
+        sentences.append(strip_text)
 
     if not sentences:
         return []

@@ -6,6 +6,12 @@ import { analyzeText } from "../lib/api";
 type ClaimResult = {
   claim: string;
   context_based_claim: string;
+  search_query?: string | null;
+  subject_search_query?: string | null;
+  retrieval_status: string;
+  grounding_status: string;
+  retrieval_strategy: string;
+  contradiction_reason?: string | null;
   score: number;
   semantic_score: number;
   verification: string;
@@ -41,6 +47,22 @@ function getVerificationStyles(label: string) {
   }
 }
 
+function getRetrievalStyles(status: string) {
+  switch (status) {
+    case "ok":
+      return "bg-emerald-100 text-emerald-700 border border-black-200";
+    case "low_semantic_match":
+      return "bg-red-100 text-red-700 border border-red-200";
+    case "weak_title_match":
+    case "low_signal_query":
+    case "no_search_results":
+    case "no_page_extract":
+    case "no_evidence_chunks":
+      return "bg-rose-100 text-rose-700 border border-rose-200";
+    default:
+      return "bg-gray-100 text-gray-700 border border-gray-200";
+  }
+}
 export default function Home() {
   const [text, setText] = useState("");
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
@@ -72,13 +94,14 @@ export default function Home() {
           </p>
 
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-[#5F6F88] md:text-5xl">
-            Analyze LLM-generated output against real-world evidence databases.
+            Compare LLM-generated output against the Wikipedia database.
           </h1>
 
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#7A7766]">
-            A full-stack claim verification system that extracts claims from LLM output, 
-            resolves contextual references, retrieves external evidence from Wikipedia, and evaluates support using semantic 
-            similarity and numeric consistency checks.
+            A full-stack claim verification system that extracts claims from LLM
+            output, resolves contextual references, retrieves external evidence
+            from Wikipedia, and evaluates support using semantic similarity and
+            numeric consistency checks.
           </p>
         </header>
 
@@ -135,24 +158,36 @@ export default function Home() {
 
             <div className="mt-5 space-y-4 text-sm leading-6 text-[#7A7766]">
               <div>
-                <p className="font-medium text-[#5F6F88]">1. LLM Claim Extraction</p>
-                <p> Utilizes NLP & custom algorithims to break text into fact-like claims for validation.</p>
+                <p className="font-medium text-[#5F6F88]">
+                  1. LLM Claim Extraction
+                </p>
+                <p>
+                  Utilizes NLP & custom algorithims to break text into fact-like
+                  claims for validation.
+                </p>
               </div>
 
               <div>
                 <p className="font-medium text-[#5F6F88]">2. Context Resolution</p>
-                <p>Resolves pronouns like “it”, "he", or “they” into clearer claims based on contextual subject.</p>
+                <p>
+                  Resolves pronouns like “it”, "he", or “they” into clearer
+                  claims based on contextual subject.
+                </p>
               </div>
 
               <div>
                 <p className="font-medium text-[#5F6F88]">3. Evidence Retrieval</p>
-                <p>Attempts searches at relevant source pages and retrieves evidence text for claim validation.</p>
+                <p>
+                  Attempts searches at relevant source pages and retrieves
+                  evidence text for claim validation.
+                </p>
               </div>
 
               <div>
                 <p className="font-medium text-[#5F6F88]">4. Verification</p>
                 <p>
-                  Scores semantic support and checks numeric consistency where possible.
+                  Scores semantic support and checks numeric consistency where
+                  possible.
                 </p>
               </div>
             </div>
@@ -165,7 +200,7 @@ export default function Home() {
               <h2 className="text-xl font-semibold text-[#5F6F88]">Summary</h2>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                <div className="rounded-2xl border border-[#EEE8DB] bg-[#FCFBF8] p-4">
                   <p className="text-xs uppercase tracking-wide text-[#7A7766]">
                     Claims Analyzed
                   </p>
@@ -174,7 +209,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                <div className="rounded-2xl border border-[#EEE8DB] bg-[#FCFBF8] p-4">
                   <p className="text-xs uppercase tracking-wide text-[#7A7766]">
                     Overall Score
                   </p>
@@ -183,7 +218,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                <div className="rounded-2xl border border-[#EEE8DB] bg-[#FCFBF8] p-4">
                   <p className="text-xs uppercase tracking-wide text-[#7A7766]">
                     Overall Verification
                   </p>
@@ -221,23 +256,30 @@ export default function Home() {
                         </h3>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getVerificationStyles(
-                            claim.verification
-                          )}`}
-                        >
-                          {claim.verification}
-                        </span>
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getVerificationStyles(
+                          claim.verification
+                        )}`}
+                      >
+                        {claim.verification}
+                      </span>
 
-                        <span className="rounded-full border border-[#DDD7CA] px-3 py-1 text-sm text-[#7A7766]">
-                          Score: {claim.score.toFixed(2)}
-                        </span>
-                      </div>
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getRetrievalStyles(
+                          claim.retrieval_status
+                        )}`}
+                      >
+                        Retrieval: {claim.retrieval_status}
+                      </span>
+
+                      <span className="rounded-full border border-[#DDD7CA] px-3 py-1 text-sm text-[#7A7766]">
+                        Score: {claim.score.toFixed(2)}
+                      </span>
                     </div>
 
+                  
                     <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                      <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#F2EDE0] p-4">
                         <p className="text-sm font-medium text-[#5F6F88]">
                           Context-Based Claim
                         </p>
@@ -245,8 +287,7 @@ export default function Home() {
                           {claim.context_based_claim}
                         </p>
                       </div>
-
-                      <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#F2EDE0] p-4">
                         <p className="text-sm font-medium text-[#5F6F88]">
                           Source Page
                         </p>
@@ -256,7 +297,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-5 rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                    <div className="mt-5 rounded-2xl border border-[#EEE8DB] bg-[#F2EDE0] p-4">
                       <p className="text-sm font-medium text-[#5F6F88]">
                         Best Evidence
                       </p>
@@ -266,7 +307,7 @@ export default function Home() {
                     </div>
 
                     <div className="mt-5 grid gap-5 md:grid-cols-2">
-                      <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#E5DCC2] p-4">
                         <p className="text-sm font-medium text-[#5F6F88]">
                           Matched Numbers
                         </p>
@@ -277,7 +318,7 @@ export default function Home() {
                         </p>
                       </div>
 
-                      <div className="rounded-2xl bg-[#FCFBF8] p-4 border border-[#EEE8DB]">
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#E5DCC2] p-4">
                         <p className="text-sm font-medium text-[#5F6F88]">
                           Mismatched Numbers
                         </p>
@@ -285,6 +326,28 @@ export default function Home() {
                           {claim.mismatched_numbers.length > 0
                             ? claim.mismatched_numbers.join(", ")
                             : "None"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-5 grid gap-5 lg:grid-cols-3">
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#D9D5C9] p-4">
+                        <p className="text-sm font-medium text-[#5F6F88]">Retrieval Query</p>
+                        <p className="mt-2 text-sm leading-6 text-[#7A7766]">
+                          {claim.search_query ?? "No query generated"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#D9D5C9] p-4">
+                        <p className="text-sm font-medium text-[#5F6F88]">Subject Query</p>
+                        <p className="mt-2 text-sm leading-6 text-[#7A7766]">
+                          {claim.subject_search_query ?? "No subject query"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#EEE8DB] bg-[#D9D5C9] p-4">
+                        <p className="text-sm font-medium text-[#5F6F88]">Retrieval Strategy</p>
+                        <p className="mt-2 text-sm leading-6 text-[#7A7766]">
+                          {claim.retrieval_strategy}
                         </p>
                       </div>
                     </div>
@@ -299,6 +362,23 @@ export default function Home() {
                     </div>
                   </article>
                 ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-[#E7E2D6] bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-[#5F6F88]">
+                  Raw JSON Output
+                </h2>
+                <span className="text-xs uppercase tracking-wide text-[#7A7766]">
+                  Debug View
+                </span>
+              </div>
+
+              <div className="overflow-x-auto rounded-2xl border border-[#E7E2D6] bg-[#D9D5C9]">
+                <pre className="p-5 text-xs leading-6 text-[#5F6F88] whitespace-pre-wrap break-words">
+                  {JSON.stringify(result, null, 2)}
+                </pre>
               </div>
             </div>
           </section>

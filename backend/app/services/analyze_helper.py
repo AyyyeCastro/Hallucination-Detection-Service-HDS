@@ -2,9 +2,10 @@ from app.services.claim_extractor import extract_claims
 from app.services.context_helper import claim_context
 from app.services.claim_verify import verify_claim
 from app.services.results import total_summary, claim_summaries
-
+from app.services.cleaner import clean_LLM_text
 
 def analyze_document(text: str) -> dict:
+    text = clean_LLM_text(text)
     extracted_claims = extract_claims(text)
     contextualized_claims = claim_context(extracted_claims)
 

@@ -14,3 +14,15 @@ def clean_wiki_evidence(text: str) -> str:
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
 
     return cleaned
+
+def clean_LLM_text(text: str) -> str:
+    if not text:
+        return ""
+
+    text = text.replace("“", "\"").replace("”", "\"").replace("’", "'")
+    text = text.replace("—", " — ").replace("–", " – ")
+    text = re.sub(r'^\s*\d+\.\s+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'(?:(?<=\s)|(?<=^)|(?<=[\.\,\;\:]))\+\d+\b', ' ', text)
+    text = re.sub(r'\[\d+\]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text

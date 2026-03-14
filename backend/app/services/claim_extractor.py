@@ -46,53 +46,40 @@ ALL_NON_FACTUAL_PREFIXES = (
     + HYPOTHETICAL_PREFIXES
 )
 
-# SUBORDINATE_STARTERS = {
-#     "while", "although", "though", "because", "since", "unless", "whereas"
-# }
+BAD_CLAUSE_STARTERS = {
+    "while", "which", "who", "that", "because", "although", "though", "since"
+}
 
 
 def possible_claim(sentence) -> bool:
     text = sentence.text.strip()
     lower_text = text.lower()
 
-    if not text:
+    if not text or text.endswith("?"):
         return False
 
-    if text.endswith("?"):
-        return False
-
-    word_count = len(text.split())
-    if word_count < 5:
+    if len(text.split()) < 6:
         return False
 
     if lower_text.startswith(ALL_NON_FACTUAL_PREFIXES):
         return False
 
-    first_token = next((token for token in sentence if not token.is_space and not token.is_punct), None)
-    # if first_token and first_token.text.lower() in SUBORDINATE_STARTERS:
-    #     return False
+    first_token = next((t for t in sentence if not t.is_space and not t.is_punct), None)
+    if first_token and first_token.text.lower() in BAD_CLAUSE_STARTERS:
+        return False
 
     has_subject = any(token.dep_ in {"nsubj", "nsubjpass"} for token in sentence)
-    has_leading_noun_or_pronoun = (
-        first_token is not None and first_token.pos_ in {"NOUN", "PROPN", "PRON"}
-    )
-    if not (has_subject or has_leading_noun_or_pronoun):
-        return False
-
-    has_verb = any(token.pos_ in {"VERB", "AUX"} for token in sentence)
-    if not has_verb:
-        return False
-
-    has_entity = len(sentence.ents) > 0
-    has_proper_noun = any(token.pos_ == "PROPN" for token in sentence)
-    has_number = any(token.like_num for token in sentence)
-    has_pronoun_subject = any(
-        token.dep_ in {"nsubj", "nsubjpass"} and token.pos_ == "PRON"
+    has_finite_verb = any(
+        token.pos_ in {"VERB", "AUX"} and token.dep_ in {"ROOT", "ccomp", "xcomp", "relcl", "advcl"}
         for token in sentence
     )
 
-    has_anchor = has_entity or has_proper_noun or has_number or has_pronoun_subject or has_leading_noun_or_pronoun
-    if not has_anchor:
+    if not has_subject:
+        return False
+    if not has_finite_verb:
+        return False
+
+    if lower_text.startswith(("which ", "who ", "that ", "while ", "because ")):
         return False
 
     return True
