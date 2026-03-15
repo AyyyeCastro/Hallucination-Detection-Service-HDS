@@ -1,15 +1,18 @@
-export async function analyzeText(text: string){
-    const response = await fetch("http://localhost:8000/analyze/",{
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text })
-    });
-    
-    if (!response.ok){
-        throw new Error("Text Analyze API failed to respond");
-    }
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
-    return response.json();
+export async function analyzeText(text: string) {
+  const response = await fetch(`${API_BASE_URL}/analyze/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to analyze text");
+  }
+
+  return response.json();
 }
