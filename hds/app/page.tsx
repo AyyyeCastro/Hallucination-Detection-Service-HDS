@@ -103,6 +103,13 @@ export default function Home() {
             from Wikipedia, and evaluates support using semantic similarity and
             numeric consistency checks.
           </p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[#7A7766]">
+              <b>UPDATE: Project needs to be run locally, due to limited memory allocation on Render's free tier (cloud hosting)! Backend hosting costs are too expensive for this project's scale. </b>
+               
+               <br></br><br></br>
+               I am keeping this portfolio frontend up just for recruiters  to get a visual of what was intended/already set up. 
+               But, the system will timeout/give error due to memory limit on analyze; it's a free-tier limitation due to RAM size.
+          </p>
         </header>
 
         <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">

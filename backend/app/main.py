@@ -6,7 +6,7 @@ import os
 app = FastAPI(
     title="HDS",
     description="API for analyzing LLM outputs for accuracy and hallucination",
-    version="2.6"
+    version="2.6.1"
 )
 
 origins = [
@@ -22,7 +22,7 @@ if extra_origin and extra_origin not in origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
