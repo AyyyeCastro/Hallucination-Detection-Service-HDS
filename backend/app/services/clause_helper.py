@@ -1,6 +1,4 @@
-import spacy
-
-nlp = spacy.load("en_core_web_sm")
+from app.services.model_helper import nlp
 
 CLAUSE_CONNECTORS = {"but"}
 

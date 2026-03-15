@@ -1,6 +1,5 @@
-from app.services.model_helper import spacy
+from app.services.model_helper import nlp
 
-nlp = spacy.load("en_core_web_sm")
 
 def text_chunker(text: str, window_size: int = 2, min_words: int = 6) -> list[str]:
     if not text:

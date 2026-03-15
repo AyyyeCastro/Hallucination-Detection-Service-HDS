@@ -1,7 +1,6 @@
-from app.services.model_helper import spacy
 from app.services.clause_helper import split_extensive_claims
+from app.services.model_helper import nlp
 
-nlp = spacy.load("en_core_web_sm")
 
 EPISTEMIC_PREFIXES = (
     "it seems", "it appears", "i suspect", "in my opinion",

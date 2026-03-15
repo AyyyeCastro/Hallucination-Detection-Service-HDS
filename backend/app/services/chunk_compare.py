@@ -1,6 +1,9 @@
+from functools import lru_cache
 from sentence_transformers import SentenceTransformer, util
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+@lru_cache(maxsize=1)
+def get_model():
+    return SentenceTransformer("all-MiniLM-L6-v2")
 
 def find_best_match(claim: str, chunks: list[str]) -> dict:
     if not chunks:
@@ -9,6 +12,7 @@ def find_best_match(claim: str, chunks: list[str]) -> dict:
             "score": 0.0
         }
 
+    model = get_model()
     claim_embedding = model.encode(claim, convert_to_tensor=True)
     chunk_embeddings = model.encode(chunks, convert_to_tensor=True)
 
