@@ -2,14 +2,51 @@
 Analyzes LLM-generated text by extracting factual claims, retrieving supporting evidence from Wikipedia via the MediaWiki API, and scoring semantic alignment between claims and evidence chunks using vector similarity.
 
 ### Table of Contents
+#### Main Updates
 
-- [V2.5 (Beta)](#v25-beta)
-- [V2: Beta Phase](#v2-beta-phase)
-- [V1: Alpha Phase](#v1-alpha-phase)
-- [Notes / Limitations](#notes--limitations)
+| Version | Type | Focus |
+|--------|------|-------|
+| [V2.5 (Beta)](#v25-beta) | Feature update | Stricter claim parsing, subject-first retrieval, contradiction-aware verification, richer diagnostics, and reduced false positives |
+| [V2 (Beta)](#v2-beta-phase) | Mainline beta | Evolved from a working prototype into a more structured, explainable verification system with contextual claim rewriting, better retrieval quality, richer metadata, and a polished UI. |
+| [V1 (Alpha)](#v1-alpha-phase) | Alpha | Initial end-to-end full-stack verification pipeline |
+
+#### Minor Updates
+| Version | Type | Focus |
+|--------|------|-------|
+| [V2.6.1 (Beta)](#v261-beta) | Lazy Models | Lazy loading for spaCy and sentence-transformers to reduce cloud hosting issues |
+| [V2.6 (Beta)](V2.6 (Beta)) | Hosting | Frontend export, CORS, hosted architecture prep |
 
 ---
+## V2.6.1 (Beta)
 
+A hotfix release focused on reducing backend startup overhead for cloud hosting, especially on Render free-tier deployments.
+
+The initial backend implementation loaded `sentence-transformers` and `spaCy` models too early during application startup, which created deployment issues for hosted environments, preventing `Uvicorn` workers from binding to the assigned port in time. This update introduces lazy-loading behavior and cleaner `NLP` helper usage to reduce startup cost while preserving the existing workflow.
+
+### Changelog
+
+- Changed `spaCy` + `sentence-transformer` loading from eager import-time initialization to cached lazy loading.
+- Optimized `NLP` helper usage so backend services can keep the existing pattern without forcing model initialization during application boot.
+- Refined backend portability for cloud hosting environments (ex. Render) by making service startup lighter.
+- Preserved the existing pipeline behavior while reducing deployment risk for hosted environments.
+
+
+## V2.6 (Beta)
+
+A minor update focused on backend and frontend changes needed for online hosting and deployment.
+
+### Changelog
+
+- Made the frontend static for deployment on Cloudflare by configuring the `Next.js` app for export-based hosting.
+
+- Opened backend `CORS` configuration to allow requests from the portfolio site (andrewcastro.dev) and production frontend domain.
+- Updated deployment architecture planning so the frontend can be hosted on `hds.andrewcastro.dev` and the backend can be hosted separately on Render.
+
+### Deployment notes
+- Frontend hosting target: `hds.andrewcastro.dev`
+- Backend hosting target: Render as a Web Service
+
+---
 ## V2.5 (Beta)
 
 Further optimized evidence retrieval, claim extraction, and per-claim contextual reference resolution for LLM output. In V2, false positives were a persistent issue. V2.5 addresses this with stricter claim extraction, less aggressive clause splitting, better LLM-output cleanup, safer context-aware pronoun resolution, subject-first retrieval with claim fallback, richer retrieval diagnostics, contradiction-aware verification, improved numeric comparison, expanded API debug output, and more conservative overall summary logic.
@@ -199,6 +236,7 @@ This version is a substantial improvement over V2 in transparency, debugging, an
 
 This is a portfolio project meant to demonstrate ability for recruiters, not large-scale or production grade fact checking. Please keep in mind I am only a single person with no budget. :) 
 
+---
 ## V2: Beta Phase
 
 V2 expands HDS from a working end-to-end prototype into a more structured claim verification system. This version improves evidence retrieval quality, introduces contextual claim rewriting for pronoun-based claims, adds per-claim verification metadata, and upgrades the frontend into a more polished interface. While the system is still not a perfect fact-checker, V2 produces significant upgrades and more explainable results than the original alpha release.
@@ -231,7 +269,7 @@ V2 expands HDS from a working end-to-end prototype into a more structured claim 
 * Some broad, nuanced, or multi-hop claims may still retrieve weak or incomplete evidence. (ex. "Albert Einstein changed the world" -- is hard to prove as true or false directly)
 * Contradiction detection is not yet implemented. Possible in V3!
 
-
+---
 # V1: Alpha Phase
 The core architecture of the system is complete, and working. However, LLM  fact-verification/accuracy needs significant refinement; likely due to chunk processing and comparison. V1 is simply intended to be a working and stable full-stack project. Further refinement coming in the future. Detailed log below.
 
